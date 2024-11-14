@@ -6,7 +6,6 @@ const generateToken = (id, role) => {
     return jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: '30d' });
 };
 
-// Register User
 exports.registerUser = async (req, res) => {
     const { username, email, password, role = 'user' } = req.body;
     try {
@@ -46,8 +45,6 @@ exports.registerUser = async (req, res) => {
     }
 };
 
-
-// Login User
 exports.loginUser = async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -74,7 +71,6 @@ exports.loginUser = async (req, res) => {
     }
 };
 
-// Get User Profile
 exports.getUserProfile = async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
@@ -88,7 +84,6 @@ exports.getUserProfile = async (req, res) => {
     }
 };
 
-// Update User Profile
 exports.updateUserProfile = async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
@@ -107,7 +102,6 @@ exports.updateUserProfile = async (req, res) => {
     }
 };
 
-// Get All Users (Admin only)
 exports.getAllUsers = async (req, res) => {
     try {
         const users = await User.find();
@@ -118,7 +112,6 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
-// Delete User (Admin only)
 exports.deleteUser = async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -134,7 +127,6 @@ exports.deleteUser = async (req, res) => {
     }
 };
 
-// Get user by ID (Admin/User)
 exports.getUserById = async (req, res) => {
     try {
         const user = await User.findById(req.params.id);

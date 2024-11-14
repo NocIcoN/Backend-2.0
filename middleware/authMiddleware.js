@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 
-// Middleware untuk memastikan pengguna terautentikasi
 const protect = async (req, res, next) => {
     let token;
   
@@ -24,8 +23,6 @@ const protect = async (req, res, next) => {
     }
   };
   
-
-// Middleware untuk memastikan hanya admin yang dapat mengakses
 const admin = (req, res, next) => {
     if (req.user && req.user.role === 'admin') {
         next();

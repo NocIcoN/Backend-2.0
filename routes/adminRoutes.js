@@ -1,10 +1,16 @@
 const express = require('express');
-const { protect } = require('../middleware/auth'); // Middleware autentikasi
-const admin = require('../middleware/admin'); // Middleware role admin
+const User = require('../models/userModel');
+const adminMiddleware = require('../middleware/adminMiddleware');
 const router = express.Router();
 
-router.get('/admin-only-endpoint', protect, admin, (req, res) => {
-  res.json({ message: 'Selamat datang, admin!' });
+router.get('/users', adminMiddleware, async (req, res) => {
+  try {
+      const users = await User.find();
+      res.json(users);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server Error' });
+  }
 });
 
 module.exports = router;

@@ -1,6 +1,5 @@
 const Result = require('../models/resultModel');
 
-// Get all results
 exports.getAllResults = async (req, res) => {
     try {
         const results = await Result.find();
@@ -10,7 +9,6 @@ exports.getAllResults = async (req, res) => {
     }
 };
 
-// Get result by ID
 exports.getResultById = async (req, res) => {
     try {
         const result = await Result.findById(req.params.id);
@@ -23,7 +21,6 @@ exports.getResultById = async (req, res) => {
     }
 };
 
-// Create new result
 exports.createResult = async (req, res) => {
     try {
         const newResult = new Result(req.body);
@@ -34,7 +31,6 @@ exports.createResult = async (req, res) => {
     }
 };
 
-// Update result
 exports.updateResult = async (req, res) => {
     try {
         const updatedResult = await Result.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -47,7 +43,6 @@ exports.updateResult = async (req, res) => {
     }
 };
 
-// Delete result
 exports.deleteResult = async (req, res) => {
     try {
         const result = await Result.findById(req.params.id);

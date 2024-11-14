@@ -1,6 +1,5 @@
 const Schedule = require('../models/scheduleModel');
 
-// Get All Schedules
 exports.getAllSchedules = async (req, res) => {
     try {
         const schedules = await Schedule.find();
@@ -10,7 +9,6 @@ exports.getAllSchedules = async (req, res) => {
     }
 };
 
-// Create New Schedule (Admin)
 exports.createSchedule = async (req, res) => {
     try {
         const schedule = await Schedule.create(req.body);
@@ -20,7 +18,6 @@ exports.createSchedule = async (req, res) => {
     }
 };
 
-// Update Schedule (Admin)
 exports.updateSchedule = async (req, res) => {
     try {
         const schedule = await Schedule.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -33,7 +30,6 @@ exports.updateSchedule = async (req, res) => {
     }
 };
 
-// Delete Schedule (Admin)
 exports.deleteSchedule = async (req, res) => {
     try {
         const schedule = await Schedule.findById(req.params.id);

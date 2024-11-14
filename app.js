@@ -4,7 +4,7 @@ const swaggerSpec = require('./swagger');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
-// const { notFound, errorHandler }  = require('./middleware/errorMiddleware');
+// const { notFound, errorHandler }  = require('./middleware/errorMiddleware'); 
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
@@ -15,6 +15,7 @@ const scheduleRoutes = require('./routes/scheduleRoutes');
 const resultRoutes = require('./routes/resultRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const certificateRoutes = require('./routes/certificateRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 dotenv.config();
 connectDB();
@@ -38,6 +39,7 @@ app.use('/api/schedules', scheduleRoutes);
 app.use('/api/results', resultRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/certificates', certificateRoutes);
+app.use('/api/admin', adminRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
