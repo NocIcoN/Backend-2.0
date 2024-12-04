@@ -2,11 +2,11 @@ const Schedule = require('../models/scheduleModel');
 
 exports.getAllSchedules = async (req, res) => {
     try {
-        const schedules = await Schedule.find();
-        res.status(200).json(schedules);
-    } catch (error) {
-        res.status(500).json({ message: 'Server Error' });
-    }
+        const schedules = await Schedule.find().populate('registeredUsers', 'username email');
+        res.status(200).json({ schedules });
+      } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch schedules.' });
+      }
 };
 
 exports.createSchedule = async (req, res) => {
