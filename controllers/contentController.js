@@ -3,11 +3,11 @@ const Content = require('../models/contentModel');
 // Get all contents
 exports.getAllContents = async (req, res) => {
     try {
-        const contents = await Content.find();
-        res.status(200).json(contents);
-    } catch (error) {
-        res.status(500).json({ message: 'Server Error' });
-    }
+        const materials = await Content.find({ contentType: 'study-material' });
+        res.status(200).json({ materials });
+      } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch study materials.' });
+      }
 };
 
 // Get content by ID
