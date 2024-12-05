@@ -22,8 +22,8 @@ const { protect, admin } = require('../middleware/authMiddleware');
  *         description: Server Error
  */
 
-// Get all content (Admin only)
-router.get('/', protect, admin, getAllContents);
+// Get all content
+router.get('/', protect, getAllContents);
 
 /**
  * @swagger

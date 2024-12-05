@@ -33,7 +33,7 @@ app.use(cors());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/content', contentRoutes);
+app.use('/api/contents', contentRoutes);
 app.use('/api/tests', testRoutes);
 app.use('/api/schedules', scheduleRoutes);
 app.use('/api/results', resultRoutes);

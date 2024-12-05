@@ -25,13 +25,15 @@ exports.getContentById = async (req, res) => {
 
 // Create new content
 exports.createContent = async (req, res) => {
-    try {
-        const newContent = new Content(req.body);
-        await newContent.save();
-        res.status(201).json(newContent);
-    } catch (error) {
-        res.status(500).json({ message: 'Server Error' });
-    }
+    const { title, description, contentType, link } = req.body;
+
+  try {
+    const content = new Content({ title, description, contentType, link });
+    await content.save();
+    res.status(201).json({ message: 'Content created successfully', content });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to create content', error: error.message });
+  }
 };
 
 // Update content

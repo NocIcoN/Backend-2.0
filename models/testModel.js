@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-// Skema untuk pilihan jawaban pada soal
 const choiceSchema = new mongoose.Schema({
     option: {
         type: String,
@@ -13,7 +12,6 @@ const choiceSchema = new mongoose.Schema({
     }
 });
 
-// Skema untuk satu soal
 const questionSchema = new mongoose.Schema({
     questionText: {
         type: String,
@@ -28,7 +26,6 @@ const questionSchema = new mongoose.Schema({
     }
 });
 
-// Skema untuk Test
 const testSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -72,7 +69,6 @@ const testSchema = new mongoose.Schema({
     }
 });
 
-// Middleware untuk meng-update field `updatedAt` saat menyimpan data
 testSchema.pre('save', function (next) {
     this.updatedAt = Date.now();
     next();
