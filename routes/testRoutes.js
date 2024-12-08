@@ -135,7 +135,7 @@ router.put('/:id', protect, admin, updateTest);
 router.delete('/:id', protect, admin, deleteTest);
 
 // Route to take test (user only)
-router.post('/tests/take', protect, async (req, res) => {
+router.post('/take', protect, async (req, res) => {
     try {
         const { userId, testId, answers } = req.body;
 
