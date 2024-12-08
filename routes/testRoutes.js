@@ -134,6 +134,29 @@ router.put('/:id', protect, admin, updateTest);
 // Delete test
 router.delete('/:id', protect, admin, deleteTest);
 
+// Route to take test (user only)
+router.post('/tests/take', protect, async (req, res) => {
+    try {
+        const { userId, testId, answers } = req.body;
+
+        const test = await Test.findById(testId);
+        if (!test) {
+            return res.status(404).json({ success: false, message: 'Test not found' });
+        }
+
+        // Perform grading and response handling here...
+
+        res.status(200).json({ success: true, message: 'Test submitted successfully' });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Failed to take test',
+            error: error.message
+        });
+    }
+});
+
+
 /**
  * @swagger
  * components:
