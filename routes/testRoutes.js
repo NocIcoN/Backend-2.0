@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAllTests, getTestById, createTest, updateTest, deleteTest } = require('../controllers/testController');
+const { getAllTests, getTestById, createTest, updateTest, deleteTest, testTaking } = require('../controllers/testController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
 /**
@@ -135,27 +135,22 @@ router.put('/:id', protect, admin, updateTest);
 router.delete('/:id', protect, admin, deleteTest);
 
 // Route to take test (user only)
-router.post('/take', protect, async (req, res) => {
+router.post('/:id/take', protect, async (req, res) => {
     try {
-        const { userId, testId, answers } = req.body;
+        const testId = req.params.id;
+        const userId = req.user.id;
+        
+        const result = await testTaking(req, res);
 
-        const test = await Test.findById(testId);
-        if (!test) {
-            return res.status(404).json({ success: false, message: 'Test not found' });
-        }
-
-        // Perform grading and response handling here...
-
-        res.status(200).json({ success: true, message: 'Test submitted successfully' });
+        res.status(result.success ? 200 : 500).json(result);
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: 'Failed to take test',
+            message: 'Terjadi kesalahan saat mengambil tes',
             error: error.message
         });
     }
 });
-
 
 /**
  * @swagger
