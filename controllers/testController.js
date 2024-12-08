@@ -44,7 +44,6 @@ exports.createTest = async (req, res) => {
     try {
         const { title, description, duration, date, totalQuestions, passingScore, questions } = req.body;
 
-        // Buat tes baru berdasarkan data yang diberikan
         const newTest = new Test({
             title, description, duration, date, totalQuestions, passingScore, questions
         });
@@ -109,6 +108,56 @@ exports.deleteTest = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Gagal menghapus tes',
+            error: error.message
+        });
+    }
+};
+
+exports.testTaking = async (req, res) => {
+    try {
+        const testId = req.params.id;
+        const userId = req.user.id;
+
+        const test = await Test.findById(testId).populate('questions.choices');
+
+        if (!test) {
+            return res.status(404).json({
+                success: false,
+                message: 'Tes tidak ditemukan'
+            });
+        }
+
+        const userAnswers = req.body.answers;
+
+        let correctAnswers = 0;
+        const userResponses = userAnswers.map((answer, index) => {
+            const question = test.questions[index];
+            const userChoice = question.choices.find(choice => choice.option === answer.option);
+
+            if (userChoice && userChoice.isCorrect) {
+                correctAnswers++;
+            }
+
+            return {
+                questionText: question.questionText,
+                userAnswer: answer.option,
+                isCorrect: userChoice ? userChoice.isCorrect : false
+            };
+        });
+
+        const score = (correctAnswers / test.totalQuestions) * test.passingScore;
+
+        res.status(200).json({
+            success: true,
+            message: 'Tes berhasil diselesaikan',
+            score: score,
+            responses: userResponses
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Terjadi kesalahan saat melakukan penilaian',
             error: error.message
         });
     }
