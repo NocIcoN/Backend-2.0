@@ -115,50 +115,56 @@ exports.deleteTest = async (req, res) => {
 
 exports.testTaking = async (req, res) => {
     try {
-        const testId = req.params.id;
-        const userId = req.user.id;
+        const testId = req.params.id; // ID test dari URL
+        const { answers } = req.body; // Jawaban dari user
 
-        const test = await Test.findById(testId).populate('questions.choices');
-
-        if (!test) {
-            return res.status(404).json({
-                success: false,
-                message: 'Tes tidak ditemukan'
+        if (!answers || !Array.isArray(answers)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Answers are required and must be an array" 
             });
         }
 
-        const userAnswers = req.body.answers;
+        // Cari test berdasarkan ID
+        const test = await Test.findById(testId);
+        if (!test) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "Test not found" 
+            });
+        }
 
-        let correctAnswers = 0;
-        const userResponses = userAnswers.map((answer, index) => {
-            const question = test.questions[index];
-            const userChoice = question.choices.find(choice => choice.option === answer.option);
-
-            if (userChoice && userChoice.isCorrect) {
-                correctAnswers++;
+        // Grading logika
+        let score = 0;
+        test.questions.forEach((question, index) => {
+            const userAnswer = answers[index];
+            if (question.choices.some(choice => choice.isCorrect && choice.option === userAnswer)) {
+                score += question.points;
             }
-
-            return {
-                questionText: question.questionText,
-                userAnswer: answer.option,
-                isCorrect: userChoice ? userChoice.isCorrect : false
-            };
         });
 
-        const score = (correctAnswers / test.totalQuestions) * test.passingScore;
+        // Simpan hasil ke database jika diperlukan
+        const result = {
+            user: req.user.id, // ID pengguna yang mengerjakan
+            test: testId,
+            score,
+            passed: score >= test.passingScore,
+        };
+
+        // Simpan hasil di collection 'results' (opsional)
+        await Result.create(result);
 
         res.status(200).json({
             success: true,
-            message: 'Tes berhasil diselesaikan',
-            score: score,
-            responses: userResponses
+            message: "Test submitted successfully",
+            data: result,
         });
-
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Terjadi kesalahan saat melakukan penilaian',
-            error: error.message
+        console.error("Error in takeTest:", error.message);
+        res.status(500).json({ 
+            success: false, 
+            message: "Failed to submit test", 
+            error: error.message 
         });
     }
 };
