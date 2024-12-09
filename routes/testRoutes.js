@@ -135,22 +135,7 @@ router.put('/:id', protect, admin, updateTest);
 router.delete('/:id', protect, admin, deleteTest);
 
 // Route to take test (user only)
-router.post('/:id/take', protect, async (req, res) => {
-    try {
-        const testId = req.params.id;
-        const userId = req.user.id;
-        
-        const result = await testTaking(req, res);
-
-        res.status(result.success ? 200 : 500).json(result);
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Terjadi kesalahan saat mengambil tes',
-            error: error.message
-        });
-    }
-});
+router.post('/:id/take', protect, testTaking);
 
 /**
  * @swagger
