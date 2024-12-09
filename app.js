@@ -4,7 +4,7 @@ const swaggerSpec = require('./swagger');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
-const { notFound, errorHandler }  = require('./middleware/errorMiddleware'); 
+// const { notFound, errorHandler }  = require('./middleware/errorMiddleware'); 
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
@@ -27,8 +27,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(express.json());
 app.use(cors());
 // Error handling middleware
-app.use(notFound);
-app.use(errorHandler);
+// app.use(notFound);
+// app.use(errorHandler);
 
 // Routes
 app.use('/api/auth', authRoutes);
