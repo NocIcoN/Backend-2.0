@@ -118,12 +118,18 @@ exports.testTaking = async (req, res) => {
         const testId = req.params.id;
         const { answers } = req.body;
 
+        if (answers && typeof answers === 'object' && !Array.isArray(answers)) {
+            answers = Object.values(answers);
+        }
+
         if (!answers || !Array.isArray(answers)) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Answers are required and must be an array" 
+            return res.status(400).json({
+                success: false,
+                message: "Answers are required and must be an array."
             });
         }
+
+        console.log("Received answers:", answers);
 
         // Cari test berdasarkan ID
         const test = await Test.findById(testId);
@@ -161,7 +167,9 @@ exports.testTaking = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: "Test submitted successfully",
+            message: "Test submitted successfully.",
+            score,
+            passing: score >= test.passingScore,
             data: result,
         });
     } catch (error) {
