@@ -115,8 +115,8 @@ exports.deleteTest = async (req, res) => {
 
 exports.testTaking = async (req, res) => {
     try {
-        const testId = req.params.id; // ID test dari URL
-        const { answers } = req.body; // Jawaban dari user
+        const testId = req.params.id;
+        const { answers } = req.body;
 
         if (!answers || !Array.isArray(answers)) {
             return res.status(400).json({ 
@@ -137,21 +137,26 @@ exports.testTaking = async (req, res) => {
         // Grading logika
         let score = 0;
         test.questions.forEach((question, index) => {
-            const userAnswer = answers[index];
-            if (question.choices.some(choice => choice.isCorrect && choice.option === userAnswer)) {
-                score += question.points;
+            const userAnswer = answers[index]; 
+
+            const selectedChoice = question.choices.find(
+                (choice) => choice.option === userAnswer
+            );
+
+            if (selectedChoice && selectedChoice.isCorrect) {
+                score += question.points; 
             }
         });
 
         // Simpan hasil ke database jika diperlukan
         const result = {
-            user: req.user.id, // ID pengguna yang mengerjakan
+            user: req.user.id,
             test: testId,
             score,
             passed: score >= test.passingScore,
         };
 
-        // Simpan hasil di collection 'results' (opsional)
+        // Simpan hasil di collection 'results'
         await Result.create(result);
 
         res.status(200).json({
