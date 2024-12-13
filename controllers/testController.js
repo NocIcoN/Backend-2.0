@@ -113,23 +113,14 @@ exports.deleteTest = async (req, res) => {
     }
 };
 
-exports.testTaking = async (req, res) => {
+exports.submitTest  = async (req, res) => {
     try {
-        const testId = req.params.id;
+        const { id } = req.params; 
         const { answers } = req.body;
 
-        if (answers && typeof answers === 'object' && !Array.isArray(answers)) {
-            answers = Object.values(answers);
+        if (!answers || typeof answers !== 'object') {
+            return res.status(400).json({ message: 'Invalid answers format.' });
         }
-
-        if (!answers || !Array.isArray(answers)) {
-            return res.status(400).json({
-                success: false,
-                message: "Answers are required and must be an array."
-            });
-        }
-
-        console.log("Received answers:", answers);
 
         // Cari test berdasarkan ID
         const test = await Test.findById(testId);
@@ -143,41 +134,23 @@ exports.testTaking = async (req, res) => {
         // Grading logika
         let score = 0;
         test.questions.forEach((question, index) => {
-            const userAnswer = answers[index]; 
-
-            const selectedChoice = question.choices.find(
-                (choice) => choice.option === userAnswer
-            );
-
-            if (selectedChoice && selectedChoice.isCorrect) {
-                score += question.points; 
+            if (answers[index] === question.correctAnswer) {
+                score += 1; 
             }
         });
 
         // Simpan hasil ke database jika diperlukan
-        const result = {
-            user: req.user.id,
-            test: testId,
+        const result = await TestResult.create({
+            user: req.user._id,
+            test: id,
             score,
-            passed: score >= test.passingScore,
-        };
-
-        // Simpan hasil di collection 'results'
-        await Result.create(result);
-
-        res.status(200).json({
-            success: true,
-            message: "Test submitted successfully.",
-            score,
-            passing: score >= test.passingScore,
-            data: result,
+            totalQuestions: test.questions.length,
         });
+
+        return res.status(200).json({ message: 'Test submitted successfully.', result });
     } catch (error) {
-        console.error("Error in takeTest:", error.message);
-        res.status(500).json({ 
-            success: false, 
-            message: "Failed to submit test", 
-            error: error.message 
-        });
+        console.error('Error in submitTest:', error);
+        return res.status(500).json({ message: 'Internal server error.' });
     }
+
 };
