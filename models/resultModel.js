@@ -11,11 +11,17 @@ const resultSchema = new mongoose.Schema({
         ref: 'Schedule',
         required: true
     },
+    testTitle: {
+        type: String,
+        required: true
+    },
+    testDate: {
+        type: Date,
+        required: true
+    },
     score: {
         type: Number,
-        required: true,
-        min: 0,
-        max: 100
+        required: true
     },
     passed: {
         type: Boolean,
@@ -23,32 +29,12 @@ const resultSchema = new mongoose.Schema({
     },
     certificateLink: {
         type: String,
-        required: true,
-        validate: {
-            validator: function (v) {
-                return /^(http|https):\/\/[^ "]+$/.test(v);
-            },
-            message: 'Tautan sertifikat tidak valid!'
-        }
+        default: null
     },
     createdAt: {
         type: Date,
         default: Date.now
     }
 });
-
-resultSchema.virtual('userName', {
-    ref: 'User',
-    localField: 'user',
-    foreignField: '_id',
-    justOne: true
-});
-
-resultSchema.pre('save', function (next) {
-    this.passed = this.score >= 70; // Example passing condition
-    next();
-});
-
-resultSchema.index({ user: 1, schedule: 1 });
 
 module.exports = mongoose.model('Result', resultSchema);
