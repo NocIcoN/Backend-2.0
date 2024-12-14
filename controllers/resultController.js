@@ -27,7 +27,7 @@ exports.getResultById = async (req, res) => {
 exports.createResult = async (req, res) => {
     try {
         const { user, schedule, score, certificateLink } = req.body;
-        const passed = score >= 70; // Example threshold for passing
+        const passed = score >= 70;
         const newResult = new Result({
             user,
             schedule,

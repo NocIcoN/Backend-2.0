@@ -8,7 +8,7 @@ const choiceSchema = new mongoose.Schema({
     },
     isCorrect: {
         type: Boolean,
-        default: false // Menandakan apakah opsi ini adalah jawaban yang benar
+        default: false
     }
 });
 
@@ -18,11 +18,11 @@ const questionSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    choices: [choiceSchema], // Array dari pilihan, setiap pilihan memiliki opsi dan penanda benar/salah
+    choices: [choiceSchema], 
     points: {
         type: Number,
         required: true,
-        min: 1 // Setiap soal harus memiliki nilai/skor
+        min: 1 
     }
 });
 
@@ -58,7 +58,7 @@ const testSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    questions: [questionSchema], // Array dari soal-soal pilihan ganda
+    questions: [questionSchema], 
     createdAt: {
         type: Date,
         default: Date.now

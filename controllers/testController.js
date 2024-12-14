@@ -1,4 +1,5 @@
 const Test = require('../models/testModel'); 
+const Result = require('../models/resultModel');
 
 exports.getAllTests = async (req, res) => {
     try {
@@ -113,44 +114,53 @@ exports.deleteTest = async (req, res) => {
     }
 };
 
-exports.submitTest  = async (req, res) => {
+exports.submitTest = async (req, res) => {
     try {
-        const { id } = req.params; 
-        const { answers } = req.body;
-
-        if (!answers || typeof answers !== 'object') {
-            return res.status(400).json({ message: 'Invalid answers format.' });
+        if (!req.user || !req.user.userId) {
+            return res.status(401).json({ message: 'User not authenticated' });
         }
 
-        // Cari test berdasarkan ID
+        const { userId } = req.user;
+        const { testId, answers } = req.body;
+
+        // Fetch the test details
         const test = await Test.findById(testId);
         if (!test) {
-            return res.status(404).json({ 
-                success: false, 
-                message: "Test not found" 
-            });
+            return res.status(404).json({ message: 'Test not found' });
         }
 
-        // Grading logika
+        // Calculate the score
         let score = 0;
         test.questions.forEach((question, index) => {
-            if (answers[index] === question.correctAnswer) {
-                score += 1; 
+            if (question.correctAnswer === answers[index]) {
+                score++;
             }
         });
 
-        // Simpan hasil ke database jika diperlukan
-        const result = await TestResult.create({
-            user: req.user._id,
-            test: id,
-            score,
-            totalQuestions: test.questions.length,
+        // Determine pass/fail
+        const passingScore = test.passingScore || Math.ceil(test.questions.length * 0.7);
+        const passed = score >= passingScore;
+
+        const newResult = new Result({
+            user: userId,
+            schedule: test.schedule || null,
+            testTitle: test.title,
+            testDate: new Date(),
+            score: score,
+            passed: passed,
+            certificateLink: passed
+                ? `https://my-service.up.railway.app/certificates/${userId}-${testId}-certificate.pdf`
+                : null
         });
 
-        return res.status(200).json({ message: 'Test submitted successfully.', result });
+        const savedResult = await newResult.save();
+
+        res.status(201).json({
+            message: 'Test submitted successfully',
+            result: savedResult
+        });
     } catch (error) {
         console.error('Error in submitTest:', error);
-        return res.status(500).json({ message: 'Internal server error.' });
+        res.status(500).json({ message: 'Server Error' });
     }
-
 };
