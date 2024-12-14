@@ -119,7 +119,6 @@ exports.submitTest = async (req, res) => {
         if (!req.user || !req.user.userId) {
             return res.status(401).json({ message: 'User not authenticated' });
         }
-        console.log('User ID from req.user:', req.user.userId);
         
         const { userId } = req.user;
         const { testId, answers } = req.body;

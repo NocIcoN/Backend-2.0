@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getAllTests, getTestById, createTest, updateTest, deleteTest, submitTest  } = require('../controllers/testController');
-const authMiddleware = require('../middleware/authMiddleware');
+
 // const { protect, admin } = require('../middleware/authMiddleware');
 
 // Get all tests
@@ -11,7 +11,7 @@ router.get('/', /*protect,*/ getAllTests);
 router.get('/:id', /*protect,*/ getTestById); 
 
 // Route to take test (user only)
-router.post('/:id/submit', /*protect,*/authMiddleware, submitTest );
+router.post('/:id/submit', /*protect,*/ submitTest );
 
 // Create new test
 router.post('/', /*protect, admin,*/ createTest);
