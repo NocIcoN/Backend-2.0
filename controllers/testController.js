@@ -115,7 +115,13 @@ exports.deleteTest = async (req, res) => {
 };
 
 exports.submitTest = async (req, res) => {
+    const { id } = req.params; // ID tes
+    const { answers } = req.body; // Jawaban user dalam format {questionIndex: answerIndex}
+    const userId = req.user.userId; // ID user dari middleware autentikasi
+
     try {
+        const test = await Test.findById(id);
+
         if (!req.user || !req.user.userId) {
             return res.status(401).json({ message: 'User not authenticated' });
         }
@@ -123,44 +129,42 @@ exports.submitTest = async (req, res) => {
         const { userId } = req.user;
         const { testId, answers } = req.body;
 
-        // Fetch the test details
-        const test = await Test.findById(testId);
         if (!test) {
             return res.status(404).json({ message: 'Test not found' });
         }
 
         // Calculate the score
         let score = 0;
-        test.questions.forEach((question, index) => {
-            if (question.correctAnswer === answers[index]) {
-                score++;
+        test.questions.forEach((question, questionIndex) => {
+            const userAnswerIndex = answers[questionIndex];
+            const correctChoice = question.choices.find(choice => choice.isCorrect);
+
+            if (correctChoice && question.choices[userAnswerIndex] === correctChoice) {
+                score += question.points;
             }
         });
 
         // Determine pass/fail
-        const passingScore = test.passingScore || Math.ceil(test.questions.length * 0.7);
-        const passed = score >= passingScore;
+        const passed = score >= test.passingScore;
 
-        const newResult = new Result({
+        const result = new Result({
             user: userId,
-            schedule: test.schedule || null,
+            schedule: null, 
             testTitle: test.title,
-            testDate: new Date(),
-            score: score,
-            passed: passed,
-            certificateLink: passed
-                ? `https://my-service.up.railway.app/certificates/${userId}-${testId}-certificate.pdf`
-                : null
+            testDate: test.date,
+            score,
+            passed,
+            certificateLink: passed ? `/certificates/${userId}-${id}.pdf` : null 
         });
 
-        const savedResult = await newResult.save();
+        await result.save();
 
         res.status(201).json({
             message: 'Test submitted successfully',
-            result: savedResult
+            result
         });
     } catch (error) {
-        console.error('Error in submitTest:', error);
+        console.error('Error in submitTest:', error.message);
         res.status(500).json({ message: 'Server Error' });
     }
 };
