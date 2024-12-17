@@ -115,10 +115,14 @@ exports.deleteTest = async (req, res) => {
 };
 
 exports.submitTest = async (req, res) => {
+    if (!req.user || !req.user._id) {
+        return res.status(401).json({ message: 'Not authorized' });
+    }
+    
+    const userId = req.user.userId; // ID user dari middleware autentikasi
     const { id } = req.params; // ID tes
     const { answers } = req.body; // Jawaban user dalam format {questionIndex: answerIndex}
-    const userId = req.user.userId; // ID user dari middleware autentikasi
-
+    
     try {
         const test = await Test.findById(id);
 
